@@ -6,6 +6,7 @@ import * as apiGateway from "aws-cdk-lib/aws-apigateway";
 // import * as subs from "aws-cdk-lib/aws-sns-subscriptions";
 // import * as sqs from "aws-cdk-lib/aws-sqs";
 import { Construct } from "constructs";
+import { HitCounter } from "./hitcounter";
 
 export class CdkWorkshopStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -14,20 +15,33 @@ export class CdkWorkshopStack extends Stack {
     // Lambda function hello world - JavaScript with AWS CDK
     const helloLambda = new lambda.Function(this, "HelloWorldLambda", {
       runtime: lambda.Runtime.NODEJS_22_X,
-      handler: "index.handler",
-      code: lambda.Code.fromAsset("lambda"),
+      handler: "index.handler", // file is "hello", function is "handler"
+      code: lambda.Code.fromAsset("lambda"), // code loaded from "lambda" directory
     });
 
     // Lambda function hello world - TypeScript with AWS CDK
-    const helloLambdaTypeScript = new nodelambda.NodejsFunction(this, "HelloWorldLambdaTypeScript", {
-      runtime: lambda.Runtime.NODEJS_22_X,
-      entry: "lambda/index.ts",
-      handler: "handler",
+    const helloLambdaTypeScript = new nodelambda.NodejsFunction(
+      this,
+      "HelloWorldLambdaTypeScript",
+      {
+        runtime: lambda.Runtime.NODEJS_22_X,
+        entry: "lambda/index.ts", // code loaded from this path
+        handler: "handler", // function is "handler"
+      }
+    );
+
+    // Define the custom construct (HitCounter)
+    const helloHitCounter = new HitCounter(this, "HelloHitCounter", {
+      downstream: helloLambdaTypeScript,
     });
 
     // API Gateway definition for Lambda
-    const apiGatewayService = new apiGateway.LambdaRestApi(this, "ApiGatewayService", {
-      handler: helloLambdaTypeScript,
-    });
+    const apiGatewayService = new apiGateway.LambdaRestApi(
+      this,
+      "ApiGatewayService",
+      {
+        handler: helloHitCounter.handler,
+      }
+    );
   }
 }
