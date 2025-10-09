@@ -13,11 +13,14 @@ export class HitCounter extends Construct {
   /** Allows accessing the counter function */
   public readonly handler: lambda.Function;
 
+  /** Allows accessing the hit counter table */
+  public readonly table: dynamodb.Table;
+
   constructor(scope: Construct, id: string, props: HitCounterProps) {
     super(scope, id);
 
     // Create the DynamoDB Table
-    const table = new dynamodb.Table(this, "Hits", {
+    this.table = new dynamodb.Table(this, "Hits", {
       tableName: "HitsTable",
       partitionKey: { name: "path", type: dynamodb.AttributeType.STRING },
     });
@@ -28,8 +31,14 @@ export class HitCounter extends Construct {
       code: lambda.Code.fromAsset("lambda"),
       environment: {
         DOWNSTREAM_FUNCTION_NAME: props.downstream.functionName,
-        HITS_TABLE_NAME: table.tableName,
+        HITS_TABLE_NAME: this.table.tableName,
       },
     });
+
+    // Grant access to write in the DynamoDB table
+    this.table.grantWriteData(this.handler);
+
+    // Grant access to HitCounter to invoke the downsstream function
+    props.downstream.grantInvoke(this.handler);
   }
 }

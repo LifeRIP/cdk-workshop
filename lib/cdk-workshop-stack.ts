@@ -2,6 +2,7 @@ import { Stack, StackProps } from "aws-cdk-lib";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as nodelambda from "aws-cdk-lib/aws-lambda-nodejs";
 import * as apiGateway from "aws-cdk-lib/aws-apigateway";
+import * as dynamoViewer from "cdk-dynamo-table-viewer";
 // import * as sns from "aws-cdk-lib/aws-sns";
 // import * as subs from "aws-cdk-lib/aws-sns-subscriptions";
 // import * as sqs from "aws-cdk-lib/aws-sqs";
@@ -43,5 +44,12 @@ export class CdkWorkshopStack extends Stack {
         handler: helloHitCounter.handler,
       }
     );
+
+    // Table viewer library
+    const viewer = new dynamoViewer.TableViewer(this, "HitsTableViewer", {
+      table: helloHitCounter.table,
+      title: helloHitCounter.table.tableName,
+      sortBy: "-".concat(helloHitCounter.table.schema().partitionKey.name), // '-path'
+    });
   }
 }
