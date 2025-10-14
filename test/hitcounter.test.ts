@@ -25,7 +25,7 @@ test("HitCounter's lambda has environment values", () => {
   const stack = new Stack();
 
   // WHEN
-  const hitCounter = new HitCounter(stack, "TableCreatedTest", {
+  new HitCounter(stack, "TableCreatedTest", {
     downstream: new NodejsFunction(stack, "TestTSLambdaInHitCounter", {
       runtime: Runtime.NODEJS_22_X,
       entry: "lambda/index.ts",
@@ -69,4 +69,23 @@ test("DynamoDB table is encrypted with SSE", () => {
       SSEEnabled: true,
     },
   });
+});
+
+test("Validate readCapacity value in DynamoDB table", () => {
+  const stack = new Stack();
+
+  const hitCounterFn = () => {
+    new HitCounter(stack, "DynamoTableEncrypted", {
+      downstream: new NodejsFunction(stack, "LambdaFn", {
+        runtime: Runtime.NODEJS_22_X,
+        entry: "lambda/index.ts",
+        handler: "handler",
+      }),
+      readCapacity: 3,
+    });
+  };
+
+  expect(hitCounterFn).toThrow(
+    /readCapacity value must be greater than 5 and less than 20/
+  );
 });
