@@ -58,7 +58,7 @@ export class CdkWorkshopStack extends Stack {
     this.hcViewerUrl = new CfnOutput(this, "DynamoTableUrl", {
       value: viewer.endpoint,
     });
-    this.hcEndpoint = new CfnOutput(this, "HitCounterEnpoint", {
+    this.hcEndpoint = new CfnOutput(this, "HitCounterEndpoint", {
       value: apiGatewayService.url,
     });
   }
