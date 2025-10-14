@@ -3,7 +3,7 @@ import * as codepipeline from "aws-cdk-lib/aws-codepipeline";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import * as pipeline from "aws-cdk-lib/pipelines";
 import { Construct } from "constructs";
-
+codepipeline.Pipeline;
 export class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -18,25 +18,22 @@ export class PipelineStack extends Stack {
     });
 
     // Pipeline variables
-    const environmentVariable = new codepipeline.Variable({
-      variableName: "ENVIRONMENT",
-      description: "Deployment Environment",
-      defaultValue: "dev",
-    });
+    // const environmentVariable = new codepipeline.Variable({
+    //   variableName: "ENVIRONMENT",
+    //   description: "Deployment Environment",
+    //   defaultValue: "dev",
+    // });
 
-    const versionVariable = new codepipeline.Variable({
-      variableName: "VERSION",
-      description: "App Version",
-      defaultValue: "1.0.0",
-    });
+    // const versionVariable = new codepipeline.Variable({
+    //   variableName: "VERSION",
+    //   description: "App Version",
+    //   defaultValue: "1.0.0",
+    // });
 
     // Create pipeline with S3 source
     const appPipeline = new pipeline.CodePipeline(this, "Pipeline", {
       pipelineName: "workshop-pipeline",
       pipelineType: codepipeline.PipelineType.V2, // Enable V2 features
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore TS2353: 'variables' is only available when using PipelineType.V2
-      variables: [environmentVariable, versionVariable],
       synth: new pipeline.CodeBuildStep("SythStep", {
         input: pipeline.CodePipelineSource.s3(
           gitBucket,
@@ -44,8 +41,8 @@ export class PipelineStack extends Stack {
         ),
         commands: ["npm ci", "npm run build", "npx cdk synth"],
         env: {
-          ENVIRONMENT: environmentVariable.reference(),
-          VERSION: versionVariable.reference(),
+          ENVIRONMENT: "dev",
+          VERSION: "1.0.0",
         },
       }),
     });
