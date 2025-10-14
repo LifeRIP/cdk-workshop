@@ -39,7 +39,7 @@ export class HitCounter extends Construct {
     }
     // Create the DynamoDB Table
     this.table = new dynamodb.Table(this, "Hits", {
-      tableName: "HitsTable",
+      //tableName: "HitsTable",
       partitionKey: { name: "path", type: dynamodb.AttributeType.STRING },
       encryption: dynamodb.TableEncryption.AWS_MANAGED,
       readCapacity: props.readCapacity ?? 5,
