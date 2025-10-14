@@ -34,6 +34,9 @@ export class PipelineStack extends Stack {
     const appPipeline = new pipeline.CodePipeline(this, "Pipeline", {
       pipelineName: "workshop-pipeline",
       pipelineType: codepipeline.PipelineType.V2, // Enable V2 features
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore TS2353: 'variables' is only available when using PipelineType.V2
+      variables: [environmentVariable, versionVariable],
       synth: new pipeline.CodeBuildStep("SythStep", {
         input: pipeline.CodePipelineSource.s3(
           gitBucket,
