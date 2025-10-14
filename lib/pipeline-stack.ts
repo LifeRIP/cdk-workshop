@@ -3,6 +3,7 @@ import * as codepipeline from "aws-cdk-lib/aws-codepipeline";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import * as pipeline from "aws-cdk-lib/pipelines";
 import { Construct } from "constructs";
+import { WorkshopPipelineStage } from "./pipeline-stage";
 codepipeline.Pipeline;
 export class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -46,6 +47,10 @@ export class PipelineStack extends Stack {
         },
       }),
     });
+
+    // Add deployment stage
+    const deploy = new WorkshopPipelineStage(this, "Deploy");
+    const deployStage = appPipeline.addStage(deploy);
 
     // Output the bucket name
     new CfnOutput(this, "GitBucketName", {
