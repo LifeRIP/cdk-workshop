@@ -1,4 +1,4 @@
-import { Stack, StackProps } from "aws-cdk-lib";
+import { CfnOutput, Stack, StackProps } from "aws-cdk-lib";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as nodelambda from "aws-cdk-lib/aws-lambda-nodejs";
 import * as apiGateway from "aws-cdk-lib/aws-apigateway";
@@ -10,6 +10,8 @@ import { Construct } from "constructs";
 import { HitCounter } from "./hitcounter";
 
 export class CdkWorkshopStack extends Stack {
+  public readonly hcViewerUrl: CfnOutput;
+  public readonly hcEndpoint: CfnOutput;
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
@@ -50,6 +52,14 @@ export class CdkWorkshopStack extends Stack {
       table: helloHitCounter.table,
       title: helloHitCounter.table.tableName,
       sortBy: "-".concat(helloHitCounter.table.schema().partitionKey.name), // '-path'
+    });
+
+    // Outputs to deployment
+    this.hcViewerUrl = new CfnOutput(this, "DynamoTableUrl", {
+      value: viewer.endpoint,
+    });
+    this.hcEndpoint = new CfnOutput(this, "HitCounterEnpoint", {
+      value: apiGatewayService.url,
     });
   }
 }
