@@ -19,8 +19,8 @@ export class PipelineStack extends Stack {
 
     // Pipeline variables
     const environmentVariable = new codepipeline.Variable({
-      variableName: "Deployment Environment",
-      description: "ENVIRONMENT",
+      variableName: "ENVIRONMENT",
+      description: "Deployment Environment",
       defaultValue: "dev",
     });
 
